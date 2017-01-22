@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Texture_Resizer">
+    <output-path>$PROJECT_DIR$/out/artifacts/Texture Resizer</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="alias" value="" />
+        <option name="appClass" value="ru.catstack.texture_resizer.private_engine.Main" />
+        <option name="description" value="Simple texture resizer" />
+        <option name="height" value="240" />
+        <option name="htmlParamFile" value="" />
+        <option name="keystore" value="" />
+        <option name="paramFile" value="" />
+        <option name="selfSigning" value="false" />
+        <option name="title" value="Texture Resizer" />
+        <option name="vendor" value="Gorr" />
+        <option name="width" value="400" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="Texture Resizer.jar">
+        <element id="module-output" name="Texture_Resizer" />
+      </element>
+    </root>
+  </artifact>
+</component>

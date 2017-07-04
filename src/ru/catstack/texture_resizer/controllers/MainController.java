@@ -6,17 +6,16 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import ru.catstack.texture_resizer.image.ImageTools;
-import ru.catstack.texture_resizer.private_engine.GApp;
-import ru.catstack.texture_resizer.private_engine.Main;
-import ru.catstack.texture_resizer.private_engine.impl.GController;
+import ru.catstack.fx_engine.impl.GController;
+import ru.catstack.fx_engine.resources.GApp;
+import ru.catstack.texture_resizer.model.ImageTools;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
-public class MainController extends GController{
+public class MainController implements GController {
 
     @FXML
     public Label filesCount;
@@ -48,7 +47,7 @@ public class MainController extends GController{
     }
 
     public void onChooseClick(ActionEvent actionEvent) {
-        files = fileChooser.showOpenMultipleDialog(Main.pStage);
+        files = fileChooser.showOpenMultipleDialog(GApp.app.getStage());
         if(files != null) {
             filesCount.setText("You have selected " + files.size() + " files");
         }else {
@@ -57,7 +56,7 @@ public class MainController extends GController{
     }
 
     public void onSetFolderClick(ActionEvent actionEvent) {
-        saveFolder = directoryChooser.showDialog(Main.pStage);
+        saveFolder = directoryChooser.showDialog(GApp.app.getStage());
         if(saveFolder == null)
             saveFolder = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents"
                     + System.getProperty("file.separator") + "Texture Resizer");
@@ -126,7 +125,7 @@ public class MainController extends GController{
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            GApp.app.main.getHostServices().showDocument("https://vk.com/catstack");
+            GApp.app.getHostServices().showDocument("https://vk.com/catstack");
         }
     }
 }

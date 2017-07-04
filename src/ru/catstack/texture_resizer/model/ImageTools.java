@@ -1,4 +1,4 @@
-package ru.catstack.texture_resizer.image;
+package ru.catstack.texture_resizer.model;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;

@@ -37,6 +37,9 @@ public class MainController implements GController {
 
     Image image;
 
+    /**
+     * this method runs, when the {@link ru.catstack.texture_resizer.model.FXML_FILES#MAIN} starts.
+     */
     @Override
     public void onShow() {
         fileChooser.setTitle("Select textures");
@@ -46,6 +49,9 @@ public class MainController implements GController {
         folder.setText(saveFolder.getPath());
     }
 
+    /**
+     * this method runs, when user clicks to choose button.
+     */
     public void onChooseClick(ActionEvent actionEvent) {
         files = fileChooser.showOpenMultipleDialog(GApp.app.getStage());
         if(files != null) {
@@ -55,6 +61,9 @@ public class MainController implements GController {
         }
     }
 
+    /**
+     * this method runs, when user clicks to set folder button.
+     */
     public void onSetFolderClick(ActionEvent actionEvent) {
         saveFolder = directoryChooser.showDialog(GApp.app.getStage());
         if(saveFolder == null)
@@ -63,6 +72,9 @@ public class MainController implements GController {
         folder.setText(saveFolder.getPath());
     }
 
+    /**
+     * this method runs, when user clicks to resize button.
+     */
     public void onResizeClick(ActionEvent actionEvent) throws MalformedURLException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
@@ -96,26 +108,9 @@ public class MainController implements GController {
         }
     }
 
-    public void on0_25Click(ActionEvent actionEvent) {
-        scaleValueField.setText("0.25");
-    }
-
-    public void on0_5Click(ActionEvent actionEvent) {
-        scaleValueField.setText("0.5");
-    }
-
-    public void on1Click(ActionEvent actionEvent) {
-        scaleValueField.setText("1");
-    }
-
-    public void on2Cick(ActionEvent actionEvent) {
-        scaleValueField.setText("2");
-    }
-
-    public void on4Click(ActionEvent actionEvent) {
-        scaleValueField.setText("4");
-    }
-
+    /**
+     * this method runs, when user clicks to info button.
+     */
     public void onInfoClick(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Information Dialog");
@@ -127,5 +122,20 @@ public class MainController implements GController {
         if (result.get() == ButtonType.OK){
             GApp.app.getHostServices().showDocument("https://vk.com/catstack");
         }
+    }
+
+    /**
+     * this method runs, when user clicks to scale help buttons.
+     */
+    public void onScaleButtonsClick(ActionEvent actionEvent) {
+        Button sourceButton = (Button)actionEvent.getSource();
+        String scaleValue = sourceButton.getText();
+
+        if(scaleValue.equals("1/4"))
+            scaleValue = "0.25";
+        else if(scaleValue.equals("1/2"))
+            scaleValue = "0.5";
+
+        scaleValueField.setText(scaleValue);
     }
 }

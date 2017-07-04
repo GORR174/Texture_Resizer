@@ -19,6 +19,9 @@ public class Main implements GApplication {
         new App(main);
     }
 
+    /**
+     * this method runs, when engine has loaded.
+     */
     @Override
     public void onStart() {
         try {

@@ -8,7 +8,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import ru.catstack.fx_engine.impl.GController;
 import ru.catstack.fx_engine.resources.GApp;
-import ru.catstack.texture_resizer.model.ImageTools;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -76,36 +75,14 @@ public class MainController implements GController {
      * this method runs, when user clicks to resize button.
      */
     public void onResizeClick(ActionEvent actionEvent) throws MalformedURLException {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
+        Float scaleValue = Float.parseFloat(scaleValueField.getText());
+        ResizeController.ResizeControllerBuilder builder = new ResizeController().new ResizeControllerBuilder();
+        ResizeController resizeController = builder.setFiles(files)
+                .setSaveFolder(saveFolder)
+                .setScaleValue(scaleValue)
+                .createResizeController();
 
-        try {
-            if (files != null) {
-                if (!saveFolder.exists())
-                    saveFolder.mkdirs();
-                for (File file : files) {
-                    image = new Image(file.toURL().toString());
-                    image = ImageTools.resizeImage(image, Float.valueOf(scaleValueField.getText()));
-                    File saveFile = new File(saveFolder.getPath() + System.getProperty("file.separator") + file.getName());
-                    ImageTools.saveImageToFile(image, saveFile);
-                }
-                alert.setContentText("Resize successful");
-                alert.showAndWait();
-            } else {
-                alert.setAlertType(Alert.AlertType.WARNING);
-                alert.setContentText("No files selected");
-                alert.showAndWait();
-            }
-        }catch (OutOfMemoryError ee){
-            alert.setAlertType(Alert.AlertType.ERROR);
-            alert.setContentText("Out of memory");
-            alert.showAndWait();
-        }catch (Exception e){
-            alert.setAlertType(Alert.AlertType.ERROR);
-            alert.setContentText("Error");
-            alert.showAndWait();
-        }
+        resizeController.resize();
     }
 
     /**

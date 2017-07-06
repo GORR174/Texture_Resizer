@@ -7,7 +7,7 @@ import ru.catstack.texture_resizer.model.FXML_FILES;
 
 public class Main implements GApplication {
 
-    public static final String VERSION = "v2.0";
+    public static final String VERSION = "v2.1";
 
     public static void main(String[] args) {
 

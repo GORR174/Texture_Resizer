@@ -106,11 +106,22 @@ public class MainController implements GController {
 
     private void checkDirectory(File directory){
         for (File file : directory.listFiles()) {
-            if(file.isDirectory()){
-                checkDirectory(file);
-            } else {
-                if(file != null)
-                    files.add(file);
+//            System.out.println(file.getPath());
+            try {
+                if (file.isDirectory()) {
+                    checkDirectory(file);
+                } else {
+                    String filePath = file.getPath();
+                    String fileExtension = "";
+                    try {
+                        fileExtension = filePath.substring(filePath.lastIndexOf("."));
+                    } catch (StringIndexOutOfBoundsException ex) {
+                    }
+                    if (fileExtension.equals(".png") || fileExtension.equals(".jpg"))
+                        files.add(file);
+                }
+            } catch (NullPointerException ex){
+
             }
         }
     }
@@ -177,7 +188,9 @@ public class MainController implements GController {
                 saveFile = new File(saveFolder.getPath() + filePath + System.getProperty("file.separator"));
                 saveFile.mkdirs();
             }
-            ImageTools.saveImageToFile(image, saveFile);
+            try {
+                ImageTools.saveImageToFile(image, saveFile);
+            } catch (IllegalArgumentException ex){}
         }
     }
 

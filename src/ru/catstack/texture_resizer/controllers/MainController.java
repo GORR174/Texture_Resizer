@@ -8,10 +8,12 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import ru.catstack.fx_engine.impl.GController;
 import ru.catstack.fx_engine.resources.GApp;
+import ru.catstack.texture_resizer.engine.Main;
 import ru.catstack.texture_resizer.model.ImageTools;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,23 +21,22 @@ public class MainController implements GController {
 
     @FXML
     public Label filesCount;
-    @FXML
     public TextField scaleValueField;
-    @FXML
     public Label folder;
-    @FXML
     public Button resizeButton;
+    public Label resizeMode;
 
-    FileChooser fileChooser = new FileChooser();
-    DirectoryChooser directoryChooser = new DirectoryChooser();
-    List<File> files;
+    private FileChooser fileChooser = new FileChooser();
+    private DirectoryChooser directoryChooser = new DirectoryChooser();
+    private List<File> files;
 
-    String defaultFolder = System.getProperty("user.home") + System.getProperty("file.separator") + "Documents"
+    private String defaultFolder = System.getProperty("user.home") + System.getProperty("file.separator") + "Documents"
             + System.getProperty("file.separator") + "Texture Resizer";
 
-    File saveFolder = new File(defaultFolder);
+    private File saveFolder = new File(defaultFolder);
+    private File filesFolder = new File(defaultFolder);
 
-    Image image;
+    private Image image;
 
     /**
      * this method runs, when the {@link ru.catstack.texture_resizer.model.FXML_FILES#MAIN} starts.
@@ -44,27 +45,80 @@ public class MainController implements GController {
     public void onShow() {
         fileChooser.setTitle("Select textures");
         directoryChooser.setTitle("Select save directory");
-        filesCount.setText("Select files");
+        filesCount.setText("Select files or folder");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg"));
         folder.setText(saveFolder.getPath());
     }
 
     /**
-     * this method runs, when user clicks to choose button.
+     * this method runs, when user clicks to choose files button.
      */
-    public void onChooseClick(ActionEvent actionEvent) {
-        files = fileChooser.showOpenMultipleDialog(GApp.app.getStage());
-        if(files != null) {
+    public void onChooseFilesClick(ActionEvent actionEvent) {
+        List<File> _files = fileChooser.showOpenMultipleDialog(GApp.app.getStage());
+        if(_files != null) {
+            filesFolder = null;
+            files = _files;
             filesCount.setText("You have selected " + files.size() + " files");
+            resizeMode.setText("Mode: files");
         }else {
-            filesCount.setText("Select files");
+            if(files == null || files.size() == 0) {
+                filesCount.setText("Select files or folder");
+                resizeMode.setText("Mode: NONE");
+            }
         }
     }
 
     /**
-     * this method runs, when user clicks to set folder button.
+     * this method runs, when user clicks to choose folder button.
      */
-    public void onSetFolderClick(ActionEvent actionEvent) {
+    public void onChooseFolderClick(ActionEvent actionEvent) {
+        filesFolder = directoryChooser.showDialog(GApp.app.getStage());
+
+        if(filesFolder != null) {
+            files = new ArrayList<>();
+            resizeMode.setText("Mode: folder");
+
+            try {
+                checkDirectory(filesFolder);
+            } catch (Exception e){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(null);
+
+                alert.setAlertType(Alert.AlertType.ERROR);
+                alert.setContentText("Error");
+                e.printStackTrace();
+                alert.showAndWait();
+
+                files = new ArrayList<>();
+            }
+
+            filesCount.setText("You have selected " + files.size() + " files");
+        } else {
+            if(files == null || files.size() == 0) {
+                filesCount.setText("Select files or folder");
+                resizeMode.setText("Mode: NONE");
+                filesFolder = null;
+            }
+        }
+
+    }
+
+    private void checkDirectory(File directory){
+        for (File file : directory.listFiles()) {
+            if(file.isDirectory()){
+                checkDirectory(file);
+            } else {
+                if(file != null)
+                    files.add(file);
+            }
+        }
+    }
+
+    /**
+     * this method runs, when user clicks to set save folder button.
+     */
+    public void onSetSaveFolderClick(ActionEvent actionEvent) {
         saveFolder = directoryChooser.showDialog(GApp.app.getStage());
         if(saveFolder == null)
             saveFolder = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents"
@@ -81,15 +135,12 @@ public class MainController implements GController {
         alert.setHeaderText(null);
 
         try {
-            if (files != null) {
+            if (files != null && files.size() != 0) {
                 if (!saveFolder.exists())
                     saveFolder.mkdirs();
-                for (File file : files) {
-                    image = new Image(file.toURL().toString());
-                    image = ImageTools.resizeImage(image, Float.valueOf(scaleValueField.getText()));
-                    File saveFile = new File(saveFolder.getPath() + System.getProperty("file.separator") + file.getName());
-                    ImageTools.saveImageToFile(image, saveFile);
-                }
+
+                resizeFiles();
+
                 alert.setContentText("Resize successful");
                 alert.showAndWait();
             } else {
@@ -104,7 +155,29 @@ public class MainController implements GController {
         }catch (Exception e){
             alert.setAlertType(Alert.AlertType.ERROR);
             alert.setContentText("Error");
+            e.printStackTrace();
             alert.showAndWait();
+        }
+    }
+
+    private void resizeFiles() throws MalformedURLException {
+        String root = "";
+        if (filesFolder != null){
+            root = filesFolder.getPath().substring(filesFolder.getPath().lastIndexOf("\\"));
+        }
+        for (File file : files) {
+            image = new Image(file.toURL().toString());
+            image = ImageTools.resizeImage(image, Float.valueOf(scaleValueField.getText()));
+            File saveFile;
+            if(filesFolder == null) {
+                saveFile = new File(saveFolder.getPath() + System.getProperty("file.separator") + file.getName());
+            } else {
+                String filePath = file.getPath().replace(filesFolder.getPath(), System.getProperty("file.separator")
+                        + root + System.getProperty("file.separator"));
+                saveFile = new File(saveFolder.getPath() + filePath + System.getProperty("file.separator"));
+                saveFile.mkdirs();
+            }
+            ImageTools.saveImageToFile(image, saveFile);
         }
     }
 
@@ -115,7 +188,7 @@ public class MainController implements GController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-        alert.setContentText("Texture Resizer by CatStack Games\n\n" +
+        alert.setContentText("Texture Resizer by CatStack Games " + Main.VERSION + "\n\n" +
                 "Do you want to open a VK page? (Ru)\n\n");
 
         Optional<ButtonType> result = alert.showAndWait();

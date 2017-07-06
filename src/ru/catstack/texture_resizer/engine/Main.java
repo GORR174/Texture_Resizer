@@ -7,6 +7,8 @@ import ru.catstack.texture_resizer.model.FXML_FILES;
 
 public class Main implements GApplication {
 
+    public static final String VERSION = "v2.0";
+
     public static void main(String[] args) {
 
         Main main = new Main();
@@ -14,7 +16,7 @@ public class Main implements GApplication {
         config.width = 400;
         config.height = 240;
         config.resizable = false;
-        config.title = "Texture Resizer";
+        config.title = "Texture Resizer " + VERSION;
 
         new App(main);
     }
